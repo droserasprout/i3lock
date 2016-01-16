@@ -84,6 +84,13 @@ int num_imgs;
 unlock_state_t unlock_state;
 pam_state_t pam_state;
 
+static pair_of_doubles get_screen_scale(pair_of_uint old_screen, pair_of_uint new_screen) {
+    pair_of_doubles scale_factor;
+    scale_factor.x = (double)old_screen.x/(double)new_screen.x;
+    scale_factor.y = (double)old_screen.y/(double)new_screen.y;
+    return scale_factor;
+}
+
 /*
  * Returns the scaling factor of the current screen. E.g., on a 227 DPI MacBook
  * Pro 13" Retina screen, the scaling factor is 227/96 = 2.36.

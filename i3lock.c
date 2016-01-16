@@ -44,6 +44,7 @@
 
 typedef void (*ev_callback_t)(EV_P_ ev_timer *w, int revents);
 
+
 char color[7] = "ffffff";
 int inactivity_timeout = 30;
 uint32_t last_resolution[2];
@@ -97,6 +98,7 @@ void u8_dec(char *s, int *i) {
  * translate keypresses to utf-8.
  *
  */
+
 static bool load_keymap(void) {
     if (xkb_context == NULL) {
         if ((xkb_context = xkb_context_new(0)) == NULL) {
