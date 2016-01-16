@@ -75,8 +75,8 @@ static struct xkb_compose_state *xkb_compose_state;
 static uint8_t xkb_base_event;
 static uint8_t xkb_base_error;
 
-cairo_surface_t *img = NULL;
-bool tile = false;
+drawmode_t drawmode = DRAWMODE_CENTER;
+
 bool ignore_empty_password = false;
 bool skip_repeated_empty_password = false;
 
@@ -767,6 +767,8 @@ int main(int argc, char *argv[]) {
         {"no-unlock-indicator", no_argument, NULL, 'u'},
         {"image", required_argument, NULL, 'i'},
         {"tiling", no_argument, NULL, 't'},
+        {"zoom", no_argument, NULL, 'z'},
+        {"fit", no_argument, NULL, 'f'},
         {"ignore-empty-password", no_argument, NULL, 'e'},
         {"inactivity-timeout", required_argument, NULL, 'I'},
         {"show-failed-attempts", no_argument, NULL, 'f'},
@@ -817,7 +819,13 @@ int main(int argc, char *argv[]) {
                 image_path = strdup(optarg);
                 break;
             case 't':
-                tile = true;
+                drawmode = DRAWMODE_TILE;
+                break;
+            case 'z':
+                drawmode = DRAWMODE_ZOOM;
+                break;
+            case 'f':
+                drawmode = DRAWMODE_FIT;
                 break;
             case 'p':
                 if (!strcmp(optarg, "win")) {
@@ -835,12 +843,12 @@ int main(int argc, char *argv[]) {
                 if (strcmp(longopts[optind].name, "debug") == 0)
                     debug_mode = true;
                 break;
-            case 'f':
+            /* case 'f':
                 show_failed_attempts = true;
-                break;
+                break; */
             default:
                 errx(EXIT_FAILURE, "Syntax: i3lock [-v] [-n] [-b] [-d] [-c color] [-u] [-p win|default]"
-                                   " [-i image.png] [-t] [-e] [-I timeout] [-f]");
+                                   " [-i image.png] [-t|-z|-f] [-e] [-I timeout] [-f]");
         }
     }
 
@@ -933,7 +941,7 @@ int main(int argc, char *argv[]) {
 
     xcb_change_window_attributes(conn, screen->root, XCB_CW_EVENT_MASK,
                                  (uint32_t[]){XCB_EVENT_MASK_STRUCTURE_NOTIFY});
-
+    cairo_surface_t *img = NULL;
     if (image_path) {
         /* Create a pixmap to render on, fill it with the background color */
         img = cairo_image_surface_create_from_png(image_path);
@@ -944,7 +952,9 @@ int main(int argc, char *argv[]) {
             img = NULL;
         }
     }
-
+    prerender_background_images(img);
+    cairo_surface_destroy(img);
+    
     /* Pixmap on which the image is rendered to (if any) */
     xcb_pixmap_t bg_pixmap = draw_image(last_resolution);
 
