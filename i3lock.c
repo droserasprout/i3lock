@@ -466,11 +466,25 @@ static void handle_key_press(xcb_key_press_event_t *event) {
     START_TIMER(discard_passwd_timeout, TSTAMP_N_MINS(3), discard_passwd_cb);
 }
 
+
+
 static void handle_button_press(xcb_button_press_event_t *event) {
     int event_x = (event->event_x);
     int event_y = (event->event_y);
-    DEBUG("x:%i", event_x);
-    DEBUG("y:%i", event_y);
+    
+
+
+    for (int screen = 0; screen < xr_screens; screen++) {
+        if (event_x < (xr_resolutions[screen].x + xr_resolutions[screen].width) && 
+            event_y < (xr_resolutions[screen].y + xr_resolutions[screen].height)) {
+                event_x -= xr_resolutions[screen].x;
+                event_y -= xr_resolutions[screen].y;
+                DEBUG("Screen number %i", screen);
+                break;
+        }
+    }
+    DEBUG("event x:%i", event_x);
+    DEBUG("event y:%i", event_y);
 }
 
 /*
@@ -771,7 +785,7 @@ int main(int argc, char *argv[]) {
         {"fit", no_argument, NULL, 'f'},
         {"ignore-empty-password", no_argument, NULL, 'e'},
         {"inactivity-timeout", required_argument, NULL, 'I'},
-        {"show-failed-attempts", no_argument, NULL, 'f'},
+        //{"show-failed-attempts", no_argument, NULL, 'f'},
         {NULL, no_argument, NULL, 0}};
 
     if ((pw = getpwuid(getuid())) == NULL)
@@ -779,7 +793,7 @@ int main(int argc, char *argv[]) {
     if ((username = pw->pw_name) == NULL)
         errx(EXIT_FAILURE, "pw->pw_name is NULL.\n");
 
-    char *optstring = "hvnbdc:p:ui:teI:f";
+    char *optstring = "hvnbdc:p:ui:teI:fz";
     while ((o = getopt_long(argc, argv, optstring, longopts, &optind)) != -1) {
         switch (o) {
             case 'v':
