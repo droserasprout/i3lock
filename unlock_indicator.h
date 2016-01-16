@@ -23,6 +23,16 @@ typedef enum {
     DRAWMODE_SCALE /* scale the image to fit the screen(s) */
 } drawmode_t;
     
+typedef struct pair_of_doubles {
+    double x,
+    double y
+} pair_of_doubles
+
+typedef struct pair_of_uint {
+    uint x,
+    uint y
+} pair_of_uint
+    
 xcb_pixmap_t draw_image(uint32_t* resolution);
 void redraw_screen(void);
 void clear_indicator(void);
