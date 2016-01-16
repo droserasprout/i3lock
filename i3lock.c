@@ -472,8 +472,6 @@ static void handle_button_press(xcb_button_press_event_t *event) {
     int event_x = (event->event_x);
     int event_y = (event->event_y);
     
-
-
     for (int screen = 0; screen < xr_screens; screen++) {
         if (event_x < (xr_resolutions[screen].x + xr_resolutions[screen].width) && 
             event_y < (xr_resolutions[screen].y + xr_resolutions[screen].height)) {
@@ -783,6 +781,7 @@ int main(int argc, char *argv[]) {
         {"tiling", no_argument, NULL, 't'},
         {"zoom", no_argument, NULL, 'z'},
         {"fit", no_argument, NULL, 'f'},
+        {"scale", no_argument, NULL, 's'},
         {"ignore-empty-password", no_argument, NULL, 'e'},
         {"inactivity-timeout", required_argument, NULL, 'I'},
         //{"show-failed-attempts", no_argument, NULL, 'f'},
@@ -793,7 +792,7 @@ int main(int argc, char *argv[]) {
     if ((username = pw->pw_name) == NULL)
         errx(EXIT_FAILURE, "pw->pw_name is NULL.\n");
 
-    char *optstring = "hvnbdc:p:ui:teI:fz";
+    char *optstring = "hvnbdc:p:ui:teI:fzs";
     while ((o = getopt_long(argc, argv, optstring, longopts, &optind)) != -1) {
         switch (o) {
             case 'v':
@@ -840,6 +839,9 @@ int main(int argc, char *argv[]) {
                 break;
             case 'f':
                 drawmode = DRAWMODE_FIT;
+                break;
+            case 's':
+                drawmode = DRAWMODE_SCALE;
                 break;
             case 'p':
                 if (!strcmp(optarg, "win")) {

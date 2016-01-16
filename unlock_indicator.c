@@ -374,7 +374,14 @@ void prerender_background_images(cairo_surface_t* bgimg) {
             int bg_w = cairo_image_surface_get_width(bgimg);
             int bg_h = cairo_image_surface_get_height(bgimg);
 
-            if (drawmode == DRAWMODE_CENTER) {
+            if (drawmode == DRAWMODE_SCALE) {
+//                 double scale_x = ;
+//                 double scale_y = ;
+//                 cairo_scale(img_ctx, w, h);
+//                 cairo_set_source_surface(img_ctx, bgimg, 0, 0);
+//                 cairo_paint(img_ctx);
+            }
+            else if (drawmode == DRAWMODE_CENTER) {
                 int x = ((w / 2) - (bg_w / 2));
                 int y = ((h / 2) - (bg_h / 2));
                 cairo_set_source_surface(img_ctx, bgimg, x, y);

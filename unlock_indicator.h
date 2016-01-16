@@ -19,8 +19,9 @@ typedef enum {
     DRAWMODE_CENTER, /* just draw the image as it is centered on each screen */
     DRAWMODE_TILE, /* tile the image to fill the screen(s) */
     DRAWMODE_ZOOM, /* zoom the image to fill the screen(s) (preserving the aspect ratio) */
-    DRAWMODE_FIT /* zoom the image to fit the screen(s) (preserving the aspect ratio) */
-    } drawmode_t;
+    DRAWMODE_FIT, /* zoom the image to fit the screen(s) (preserving the aspect ratio) */
+    DRAWMODE_SCALE /* scale the image to fit the screen(s) */
+} drawmode_t;
     
 xcb_pixmap_t draw_image(uint32_t* resolution);
 void redraw_screen(void);
