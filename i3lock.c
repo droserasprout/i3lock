@@ -466,6 +466,13 @@ static void handle_key_press(xcb_key_press_event_t *event) {
     START_TIMER(discard_passwd_timeout, TSTAMP_N_MINS(3), discard_passwd_cb);
 }
 
+static void handle_button_press(xcb_button_press_event_t *event) {
+    int event_x = (event->event_x);
+    int event_y = (event->event_y);
+    DEBUG("x:%i", event_x);
+    DEBUG("y:%i", event_y);
+}
+
 /*
  * A visibility notify event will be received when the visibility (= can the
  * user view the complete window) changes, so for example when a popup overlays
@@ -632,6 +639,7 @@ static void xcb_check_cb(EV_P_ ev_check *w, int revents) {
 
     while ((event = xcb_poll_for_event(conn)) != NULL) {
         if (event->response_type == 0) {
+
             xcb_generic_error_t *error = (xcb_generic_error_t *)event;
             if (debug_mode)
                 fprintf(stderr, "X11 Error received! sequence 0x%x, error_code = %d\n",
@@ -639,11 +647,14 @@ static void xcb_check_cb(EV_P_ ev_check *w, int revents) {
             free(event);
             continue;
         }
-
         /* Strip off the highest bit (set if the event is generated) */
         int type = (event->response_type & 0x7F);
 
         switch (type) {
+            case XCB_BUTTON_PRESS:
+                handle_button_press((xcb_button_press_event_t *)event);
+                break;
+
             case XCB_KEY_PRESS:
                 handle_key_press((xcb_key_press_event_t *)event);
                 break;

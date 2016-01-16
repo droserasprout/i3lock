@@ -118,7 +118,10 @@ xcb_window_t open_fullscreen_window(xcb_connection_t *conn, xcb_screen_t *scr, c
                 XCB_EVENT_MASK_KEY_PRESS |
                 XCB_EVENT_MASK_KEY_RELEASE |
                 XCB_EVENT_MASK_VISIBILITY_CHANGE |
-                XCB_EVENT_MASK_STRUCTURE_NOTIFY;
+                XCB_EVENT_MASK_STRUCTURE_NOTIFY |
+                XCB_EVENT_MASK_BUTTON_PRESS |
+                XCB_EVENT_MASK_BUTTON_RELEASE |
+                XCB_EVENT_MASK_POINTER_MOTION;
 
     xcb_create_window(conn,
                       XCB_COPY_FROM_PARENT,
@@ -164,12 +167,15 @@ void grab_pointer_and_keyboard(xcb_connection_t *conn, xcb_screen_t *screen, xcb
     xcb_grab_keyboard_cookie_t kcookie;
     xcb_grab_keyboard_reply_t *kreply;
 
+    // do we need it?
+    //xcb_void_cookie_t bcookie;
+
     int tries = 10000;
 
     while (tries-- > 0) {
         pcookie = xcb_grab_pointer(
             conn,
-            false,               /* get all pointer events specified by the following mask */
+            true,               /* get all pointer events specified by the following mask */
             screen->root,        /* grab the root window */
             XCB_NONE,            /* which events to let through */
             XCB_GRAB_MODE_ASYNC, /* pointer events should continue as normal */
@@ -206,7 +212,19 @@ void grab_pointer_and_keyboard(xcb_connection_t *conn, xcb_screen_t *screen, xcb
         /* Make this quite a bit slower */
         usleep(50);
     }
-
+/*
+    bcookie = xcb_grab_button(
+        conn,
+        true,         // report events
+        screen->root, // grab the root window
+        XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE,
+        XCB_GRAB_MODE_SYNC, // process events as normal, do not require sync 
+        XCB_GRAB_MODE_ASYNC,
+        screen->root, // confine_to
+        XCB_NONE,
+        XCB_BUTTON_INDEX_ANY,
+        XCB_MOD_MASK_ANY); // cursor
+   */ 
     if (tries <= 0)
         errx(EXIT_FAILURE, "Cannot grab pointer/keyboard");
 }
