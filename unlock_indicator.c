@@ -86,8 +86,8 @@ pam_state_t pam_state;
 
 static pair_of_doubles get_screen_scale(pair_of_uint old_screen, pair_of_uint new_screen) {
     pair_of_doubles scale_factor;
-    scale_factor.x = (double)old_screen.x/(double)new_screen.x;
-    scale_factor.y = (double)old_screen.y/(double)new_screen.y;
+    scale_factor.x = (double)new_screen.x/(double)old_screen.x;
+    scale_factor.y = (double)new_screen.y/(double)old_screen.y;
     return scale_factor;
 }
 
@@ -380,14 +380,17 @@ void prerender_background_images(cairo_surface_t* bgimg) {
         if (bgimg) {
             int bg_w = cairo_image_surface_get_width(bgimg);
             int bg_h = cairo_image_surface_get_height(bgimg);
+            DEBUG("bg_w%i", bg_w);
+            DEBUG("bg_h%i", bg_h);
 
             if (drawmode == DRAWMODE_SCALE) {
-//                 double scale_x = ;
-//                 double scale_y = ;
-//                 cairo_scale(img_ctx, w, h);
-//                 cairo_set_source_surface(img_ctx, bgimg, 0, 0);
-//                 cairo_paint(img_ctx);
+                pair_of_doubles scale_factor = get_screen_scale((pair_of_uint){bg_w, bg_h}
+                                                               ,(pair_of_uint){w, h});
+                cairo_scale(img_ctx, scale_factor.x, scale_factor.y);
+                cairo_set_source_surface(img_ctx, bgimg, 0, 0);
+                cairo_paint(img_ctx);
             }
+            
             else if (drawmode == DRAWMODE_CENTER) {
                 int x = ((w / 2) - (bg_w / 2));
                 int y = ((h / 2) - (bg_h / 2));
