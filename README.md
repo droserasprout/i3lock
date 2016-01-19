@@ -1,5 +1,7 @@
 i3lock - improved screen locker
 ===============================
+
+[![Join the chat at https://gitter.im/droserasprout/i3lock](https://badges.gitter.im/droserasprout/i3lock.svg)](https://gitter.im/droserasprout/i3lock?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 i3lock is a simple screen locker like slock. After starting it, you will
 see a white screen (you can configure the color/an image). You can return
 to your screen by entering your password.
