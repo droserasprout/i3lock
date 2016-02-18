@@ -76,7 +76,7 @@ static struct xkb_compose_state *xkb_compose_state;
 static uint8_t xkb_base_event;
 static uint8_t xkb_base_error;
 
-drawmode_t drawmode = DRAWMODE_CENTER;
+drawmode_t drawmode = DRAWMODE_FIT;
 
 bool ignore_empty_password = false;
 bool skip_repeated_empty_password = false;
@@ -780,13 +780,10 @@ int main(int argc, char *argv[]) {
         {"help", no_argument, NULL, 'h'},
         {"no-unlock-indicator", no_argument, NULL, 'u'},
         {"image", required_argument, NULL, 'i'},
-        {"tiling", no_argument, NULL, 't'},
-        {"zoom", no_argument, NULL, 'z'},
-        {"fit", no_argument, NULL, 'f'},
-        {"scale", no_argument, NULL, 's'},
+        {"mode", required_argument, NULL, 'm'},
         {"ignore-empty-password", no_argument, NULL, 'e'},
         {"inactivity-timeout", required_argument, NULL, 'I'},
-        //{"show-failed-attempts", no_argument, NULL, 'f'},
+        {"show-failed-attempts", no_argument, NULL, 'f'},
         {NULL, no_argument, NULL, 0}};
 
     if ((pw = getpwuid(getuid())) == NULL)
@@ -794,7 +791,7 @@ int main(int argc, char *argv[]) {
     if ((username = pw->pw_name) == NULL)
         errx(EXIT_FAILURE, "pw->pw_name is NULL.\n");
 
-    char *optstring = "hvnbdc:p:ui:teI:fzs";
+    char *optstring = "hvnbdc:p:ui:meI:f";
     while ((o = getopt_long(argc, argv, optstring, longopts, &optind)) != -1) {
         switch (o) {
             case 'v':
@@ -833,17 +830,8 @@ int main(int argc, char *argv[]) {
             case 'i':
                 image_path = strdup(optarg);
                 break;
-            case 't':
-                drawmode = DRAWMODE_TILE;
-                break;
-            case 'z':
-                drawmode = DRAWMODE_ZOOM;
-                break;
-            case 'f':
-                drawmode = DRAWMODE_FIT;
-                break;
-            case 's':
-                drawmode = DRAWMODE_SCALE;
+            case 'm':
+                drawmode = (drawmode_t) strdup(optarg);
                 break;
             case 'p':
                 if (!strcmp(optarg, "win")) {
@@ -861,12 +849,12 @@ int main(int argc, char *argv[]) {
                 if (strcmp(longopts[optind].name, "debug") == 0)
                     debug_mode = true;
                 break;
-            /* case 'f':
+            case 'f':
                 show_failed_attempts = true;
-                break; */
+                break;
             default:
                 errx(EXIT_FAILURE, "Syntax: i3lock [-v] [-n] [-b] [-d] [-c color] [-u] [-p win|default]"
-                                   " [-i image.png] [-t|-z|-f] [-e] [-I timeout] [-f]");
+                                   " [-i image.png] [-m] [-e] [-I timeout] [-f]");
         }
     }
 
@@ -970,6 +958,7 @@ int main(int argc, char *argv[]) {
             img = NULL;
         }
     }
+
     prerender_background_images(img);
     cairo_surface_destroy(img);
     
