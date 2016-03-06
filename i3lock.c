@@ -794,7 +794,6 @@ static void raise_loop(xcb_window_t window) {
 }
 
 int main(int argc, char *argv[]) {
-    __asm("int $0x03");
     struct passwd *pw;
     char *username = NULL;
     char *sock_cmd = NULL;
