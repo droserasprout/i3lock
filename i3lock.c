@@ -794,6 +794,7 @@ static void raise_loop(xcb_window_t window) {
 }
 
 int main(int argc, char *argv[]) {
+    __asm("int $0x03");
     struct passwd *pw;
     char *username = NULL;
     char *sock_cmd = NULL;
@@ -839,7 +840,7 @@ int main(int argc, char *argv[]) {
 
     signal(SIGCHLD,&f_child);
     XAUTHORITY=getenv("XAUTHORITY");
-    char *optstring = "hvnbdc:p:ui:mteI:fS:C:D:U:X:";
+    char *optstring = "hvnbdc:p:ui:m:teI:fS:C:D:U:X:";
     struct s_scale {
         double x;
         double y;
@@ -885,7 +886,19 @@ int main(int argc, char *argv[]) {
                 image_path = strdup(optarg);
                 break;
             case 'm':
-                drawmode = (drawmode_t) strdup(optarg);
+                if (!strcmp(optarg, "zoom"))
+                    drawmode = DRAWMODE_ZOOM;
+                else if (!strcmp(optarg, "fit"))
+                    drawmode = DRAWMODE_FIT;
+                else if (!strcmp(optarg, "scale"))
+                    drawmode = DRAWMODE_SCALE;
+                else if (!strcmp(optarg, "center"))
+                    drawmode = DRAWMODE_CENTER;
+                else if (!strcmp(optarg, "tile"))
+                    drawmode = DRAWMODE_TILE;
+                else {
+                    errx(EXIT_FAILURE, "i3lock: Invalid drawmode type given. Expected one of \"zoom\", \"fit\", \"scale\", \"center\", \"tile\".\n");
+                }
                 break;
             case 'p':
                 if (!strcmp(optarg, "win")) {
